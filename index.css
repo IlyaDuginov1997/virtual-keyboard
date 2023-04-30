@@ -2,9 +2,35 @@
     box-sizing: border-box;
 }
 
-.keyboard {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.container {
+    margin: 0 auto;
     width: 927px;
-    margin: 250px auto;
+    text-align: center;
+}
+
+.textarea {
+    width: 100%;
+    border: 1px solid black;
+    min-height: 200px;
+}
+
+.keyboard {
+    width: 100%;
+    margin: 30px 0;
     border: 1px solid black;
     border-radius: 7px;
     padding: 10px;
@@ -32,38 +58,43 @@
 
 .key:hover {
     cursor: pointer;
-    background: aqua;
+    background: rgba(19,21,17,0.57);
 }
 
-.backspace {
+.key.active {
+    transition: 100ms;
+    border-radius: 25px;
+    background: gray;
+}
+
+.Backspace {
     width: 125px;
 }
 
-.tab {
+.Tab {
     width: 65px;
 }
 
-.capslock {
-    width: 135px;
+.CapsLock {
+    width: 85px;
 }
 
-.enter {
-    width: 100px;
+.Enter {
+    width: 150px;
 }
 
-.shiftleft {
+.ShiftLeft {
     width: 125px;
 }
 
-.shiftright {
+.ShiftRight {
     width: 110px;
 }
 
-.controlleft,
-.controlright {
-    width: 80px;
+.ControlLeft {
+    width: 110px;
 }
 
-.space {
+.Space {
     width: 375px;
 }

@@ -1,5 +1,5 @@
 const line_1 = {
-    'Backqoute': {
+    'Backquote': {
         eng: {
             lowerCase: '`',
             upperCase: '~',
@@ -650,3 +650,10 @@ const line_5 = {
 };
 
 export const linesArrow = [line_1, line_2, line_3, line_4, line_5];
+
+export const registerVariants = [
+    {className: 'capsUp', value: 'lowerCase'},
+    {className: 'capsDown', value: 'upperCase'},
+    {className: 'caps', value: 'upperCase'},
+    {className: 'shiftCaps', value: 'lowerCase'},
+];
