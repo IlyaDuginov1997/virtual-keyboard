@@ -111,6 +111,7 @@ const createKeyboard = () => {
 
       // mouse down handle
       key.addEventListener('mousedown', () => {
+        textareaDiv.focus();
 
         if (item === CAPSLOCK) {
           capslockHandle(key);
@@ -226,6 +227,8 @@ document.addEventListener('mouseup', () => {
 });
 
 document.addEventListener('keydown', (event) => {
+  textareaDiv.focus();
+
   if (
     event.code === TAB
     || event.code === 'AltLeft'
@@ -251,6 +254,7 @@ document.addEventListener('keydown', (event) => {
       || event.code === ARROW_UP
       || event.code === ARROW_DOWN
     ) {
+      event.preventDefault();
       addOneCharacter(el.innerText);
     }
 
@@ -344,9 +348,6 @@ const addOneCharacter = (inner) => {
   const end = textareaDiv.selectionEnd;
   textareaDiv.value = textareaDiv.value.substring(0, start) + inner + textareaDiv.value.substring(end);
 
-  setTimeout(function () {
-    textareaDiv.focus();
-    textareaDiv.selectionStart = end + 1;
-    textareaDiv.selectionEnd = end + 1;
-  }, 0);
+  textareaDiv.selectionStart = end + 1;
+  textareaDiv.selectionEnd = end + 1;
 };
