@@ -60,6 +60,17 @@ let keyRegister = CAPS_UP;
 let isCapsLock = false;
 let isShift = false;
 
+const sessionStorageFunc = () => {
+  const savedLanguage = sessionStorage.getItem('lang');
+  if (savedLanguage) {
+    currentLanguage = savedLanguage;
+  } else {
+    sessionStorage.setItem('lang', currentLanguage);
+  }
+};
+
+sessionStorageFunc();
+
 const init = () => {
   container.classList.add('container');
   body.append(container);
@@ -100,6 +111,7 @@ const createKeyboard = () => {
 
       // mouse down handle
       key.addEventListener('mousedown', () => {
+        textareaDiv.focus();
 
         if (item === CAPSLOCK) {
           capslockHandle(key);
@@ -215,6 +227,8 @@ document.addEventListener('mouseup', () => {
 });
 
 document.addEventListener('keydown', (event) => {
+  textareaDiv.focus();
+
   if (
     event.code === TAB
     || event.code === 'AltLeft'
@@ -240,6 +254,7 @@ document.addEventListener('keydown', (event) => {
       || event.code === ARROW_UP
       || event.code === ARROW_DOWN
     ) {
+      event.preventDefault();
       addOneCharacter(el.innerText);
     }
 
@@ -301,6 +316,8 @@ const changeLanguage = () => {
   const previousLanguage = currentLanguage;
   currentLanguage = currentLanguage === ENG ? RU : ENG;
 
+  sessionStorage.setItem('lang', currentLanguage);
+
   const keys = document.querySelectorAll('.key');
 
   Array.from(keys, (el) => {
@@ -331,9 +348,6 @@ const addOneCharacter = (inner) => {
   const end = textareaDiv.selectionEnd;
   textareaDiv.value = textareaDiv.value.substring(0, start) + inner + textareaDiv.value.substring(end);
 
-  setTimeout(function () {
-    textareaDiv.focus();
-    textareaDiv.selectionStart = end + 1;
-    textareaDiv.selectionEnd = end + 1;
-  }, 0);
+  textareaDiv.selectionStart = end + 1;
+  textareaDiv.selectionEnd = end + 1;
 };
