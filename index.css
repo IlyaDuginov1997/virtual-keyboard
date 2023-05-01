@@ -57,6 +57,7 @@ h6 {
 }
 
 .key:hover {
+    transition: 100ms;
     cursor: pointer;
     background: rgba(19,21,17,0.57);
 }
