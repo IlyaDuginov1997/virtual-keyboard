@@ -60,6 +60,17 @@ let keyRegister = CAPS_UP;
 let isCapsLock = false;
 let isShift = false;
 
+const sessionStorageFunc = () => {
+  const savedLanguage = sessionStorage.getItem('lang');
+  if (savedLanguage) {
+    currentLanguage = savedLanguage;
+  } else {
+    sessionStorage.setItem('lang', currentLanguage);
+  }
+};
+
+sessionStorageFunc();
+
 const init = () => {
   container.classList.add('container');
   body.append(container);
@@ -300,6 +311,8 @@ const capslockHandle = (capslock) => {
 const changeLanguage = () => {
   const previousLanguage = currentLanguage;
   currentLanguage = currentLanguage === ENG ? RU : ENG;
+
+  sessionStorage.setItem('lang', currentLanguage);
 
   const keys = document.querySelectorAll('.key');
 
