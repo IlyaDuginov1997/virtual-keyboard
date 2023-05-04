@@ -1,5 +1,5 @@
-import {linesArrow, registerVariants} from './utils/constants.js';
-import {hideAllElements, showOneElement} from './utils/helpers.js';
+import { linesArrow, registerVariants } from './utils/constants.js';
+import { hideAllElements, showOneElement } from './utils/helpers.js';
 
 const body = document.querySelector('body');
 
@@ -55,7 +55,7 @@ const configObj = {
 
 let currentLanguage = ENG;
 let activeMouseKey = null;
-let togetherActiveKeys = new Set();
+const togetherActiveKeys = new Set();
 let keyRegister = CAPS_UP;
 let isCapsLock = false;
 let isShift = false;
@@ -71,14 +71,76 @@ const sessionStorageFunc = () => {
 
 sessionStorageFunc();
 
-const init = () => {
-  container.classList.add('container');
-  body.append(container);
+// help function to select one active key for render in DOM
+const hideKeys = (keyRegisterValue) => {
+  const keys = document.querySelectorAll(`span.${currentLanguage}`);
+  Array.from(keys, (el) => {
+    hideAllElements(el);
+    showOneElement(el, `.${keyRegisterValue}`);
+    return null;
+  });
+};
 
-  createTitle();
-  createTextArea();
-  createKeyboard();
-  createDescription();
+const shiftLeftDownHandle = () => {
+  keyRegister = isCapsLock ? SHIFT_CAPS : CAPS_DOWN;
+  isShift = true;
+  hideKeys(keyRegister);
+};
+
+const shiftLeftUpHandle = () => {
+  keyRegister = isCapsLock ? CAPS : CAPS_UP;
+  isShift = false;
+  hideKeys(keyRegister);
+};
+
+const capslockHandle = (capslock) => {
+  isCapsLock = !isCapsLock;
+
+  if (isCapsLock) {
+    keyRegister = CAPS;
+    hideKeys(keyRegister);
+
+    capslock.classList.add('active');
+    togetherActiveKeys.add(CAPSLOCK);
+  } else {
+    keyRegister = isShift ? CAPS_DOWN : CAPS_UP;
+    hideKeys(keyRegister);
+
+    capslock.classList.remove('active');
+    togetherActiveKeys.delete(CAPSLOCK);
+  }
+};
+
+const changeLanguage = () => {
+  const previousLanguage = currentLanguage;
+  currentLanguage = currentLanguage === ENG ? RU : ENG;
+
+  sessionStorage.setItem('lang', currentLanguage);
+
+  const keys = document.querySelectorAll('.key');
+
+  Array.from(keys, (el) => {
+    const previousLanguageKey = el.querySelector(`span.${previousLanguage}`);
+    previousLanguageKey.classList.add('hidden');
+    hideAllElements(previousLanguageKey);
+
+    const currentLanguageKey = el.querySelector(`span.${currentLanguage}`);
+    currentLanguageKey.classList.remove('hidden');
+    hideAllElements(currentLanguageKey);
+    showOneElement(currentLanguageKey, `.${keyRegister}`);
+    return null;
+  });
+};
+
+const addOneCharacter = (inner) => {
+  const start = textareaDiv.selectionStart;
+  const end = textareaDiv.selectionEnd;
+  textareaDiv.value = textareaDiv.value.substring(0, start)
+    + inner
+    + textareaDiv.value.substring(end);
+
+  textareaDiv.selectionStart = end + 1;
+  textareaDiv.selectionEnd = end + 1;
 };
 
 const createTitle = () => {
@@ -92,16 +154,42 @@ const createTextArea = () => {
   container.append(textareaDiv);
 };
 
+const creatRegisterKeyVariants = (wrapper, contentObj) => {
+  registerVariants.forEach((item) => {
+    const variant = document.createElement('span');
+    variant.classList.add(item.className);
+    variant.innerText = contentObj[item.value];
+
+    if (item.className !== CAPS_UP) variant.classList.add('hidden');
+
+    wrapper.append(variant);
+  });
+};
+
+const createLanguageKeyVariants = (wrapper, contentObj) => {
+  const languagesArr = Object.keys(contentObj);
+
+  languagesArr.forEach((lang) => {
+    const languageKey = document.createElement('span');
+    languageKey.classList.add(lang);
+    wrapper.append(languageKey);
+    creatRegisterKeyVariants(languageKey, contentObj[lang]);
+
+    if (lang !== currentLanguage) languageKey.classList.add('hidden');
+  });
+};
+
 const createKeyboard = () => {
   keyboardDiv.classList.add('keyboard');
   container.append(keyboardDiv);
 
-  for (let i = 0; i < linesArrow.length; i++) {
+  for (let i = 0; i < linesArrow.length; i += 1) {
     const keyBoardLine = document.createElement('div');
     keyBoardLine.classList.add('keyboard-line', `line-${i + 1}`);
 
     const lineArrowItem = Object.keys(linesArrow[i]);
-    for (let item of lineArrowItem) {
+    // eslint-disable-next-line no-loop-func
+    lineArrowItem.forEach((item) => {
       const currentItem = linesArrow[i][item];
       const key = document.createElement('div');
       key.classList.add('key', item);
@@ -121,8 +209,7 @@ const createKeyboard = () => {
 
         if (item === SHIFT_LEFT || item === SHIFT_RIGHT) shiftLeftDownHandle();
 
-        // eslint-disable-next-line no-prototype-builtins
-        if (!configObj.hasOwnProperty(item)) {
+        if (!Object.prototype.hasOwnProperty.call(configObj, item)) {
           addOneCharacter(key.innerText);
         }
 
@@ -135,9 +222,10 @@ const createKeyboard = () => {
 
           if (sel) deletedLeftCharacters = 0;
 
-          textareaDiv.value = textareaDiv.value.substring(0, start - deletedLeftCharacters) + textareaDiv.value.substring(end);
+          textareaDiv.value = textareaDiv.value.substring(0, start - deletedLeftCharacters)
+            + textareaDiv.value.substring(end);
 
-          setTimeout(function () {
+          setTimeout(() => {
             textareaDiv.focus();
             textareaDiv.selectionStart = start - deletedLeftCharacters;
             textareaDiv.selectionEnd = start - deletedLeftCharacters;
@@ -153,9 +241,10 @@ const createKeyboard = () => {
 
           if (sel) deletedLeftCharacters = 0;
 
-          textareaDiv.value = textareaDiv.value.substring(0, start) + textareaDiv.value.substring(end + deletedLeftCharacters);
+          textareaDiv.value = textareaDiv.value.substring(0, start)
+            + textareaDiv.value.substring(end + deletedLeftCharacters);
 
-          setTimeout(function () {
+          setTimeout(() => {
             textareaDiv.focus();
             textareaDiv.selectionStart = end;
             textareaDiv.selectionEnd = end;
@@ -172,48 +261,30 @@ const createKeyboard = () => {
 
         activeMouseKey = item;
       });
-    }
+    });
 
     keyboardDiv.append(keyBoardLine);
   }
 };
 
-const createLanguageKeyVariants = (wrapper, contentObj) => {
-  const languagesArr = Object.keys(contentObj);
-
-  for (let lang of languagesArr) {
-
-    const languageKey = document.createElement('span');
-    languageKey.classList.add(lang);
-    wrapper.append(languageKey);
-    creatRegisterKeyVariants(languageKey, contentObj[lang]);
-
-    if (lang !== currentLanguage) languageKey.classList.add('hidden');
-  }
-};
-
-const creatRegisterKeyVariants = (wrapper, contentObj) => {
-  for (let item of registerVariants) {
-    const variant = document.createElement('span');
-    variant.classList.add(item.className);
-    variant.innerText = contentObj[item.value];
-
-    if (item.className !== CAPS_UP) variant.classList.add('hidden');
-
-    wrapper.append(variant);
-  }
-};
-
 const createDescription = () => {
   postDescription.classList.add('post-description');
-  postDescription.innerText = 'Клавиатура создана в операционной системе Windows. Для переключения языка используется комбинация: любое сочетание ctrl + alt.' +
-    ' Больше 4 клавиш на клавиатуре одновременно зажать нельзя';
+  postDescription.innerText = 'Клавиатура создана в операционной системе Windows. Для переключения языка используется комбинация: любое сочетание ctrl + alt.'
+    + ' Больше 4 клавиш на клавиатуре одновременно зажать нельзя';
   container.append(postDescription);
 };
 
+const init = () => {
+  container.classList.add('container');
+  body.append(container);
+
+  createTitle();
+  createTextArea();
+  createKeyboard();
+  createDescription();
+};
 
 init();
-
 
 document.addEventListener('mouseup', () => {
   if (activeMouseKey && activeMouseKey !== CAPSLOCK) {
@@ -238,7 +309,6 @@ document.addEventListener('keydown', (event) => {
   const el = document.querySelector(`.${event.code}`);
 
   if (el && togetherActiveKeys.size < TOGETHER_ACTIVE_KEYS_LIMIT) {
-
     if (event.code === CAPSLOCK) {
       capslockHandle(el);
     } else {
@@ -269,7 +339,6 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
   const activeEl = document.querySelector(`.${event.code}`);
   if (activeEl) {
-
     if (event.code !== CAPSLOCK) {
       activeEl.classList.remove('active');
       togetherActiveKeys.delete(event.code);
@@ -278,76 +347,3 @@ document.addEventListener('keyup', (event) => {
 
   if (event.code === SHIFT_LEFT || event.code === SHIFT_RIGHT) shiftLeftUpHandle();
 });
-
-
-const shiftLeftDownHandle = () => {
-  keyRegister = isCapsLock ? SHIFT_CAPS : CAPS_DOWN;
-  isShift = true;
-  hideKeys(keyRegister);
-};
-
-const shiftLeftUpHandle = () => {
-  keyRegister = isCapsLock ? CAPS : CAPS_UP;
-  isShift = false;
-  hideKeys(keyRegister);
-};
-
-
-const capslockHandle = (capslock) => {
-  isCapsLock = !isCapsLock;
-
-  if (isCapsLock) {
-    keyRegister = CAPS;
-    hideKeys(keyRegister);
-
-    capslock.classList.add('active');
-    togetherActiveKeys.add(CAPSLOCK);
-
-  } else {
-    keyRegister = isShift ? CAPS_DOWN : CAPS_UP;
-    hideKeys(keyRegister);
-
-    capslock.classList.remove('active');
-    togetherActiveKeys.delete(CAPSLOCK);
-  }
-};
-
-const changeLanguage = () => {
-  const previousLanguage = currentLanguage;
-  currentLanguage = currentLanguage === ENG ? RU : ENG;
-
-  sessionStorage.setItem('lang', currentLanguage);
-
-  const keys = document.querySelectorAll('.key');
-
-  Array.from(keys, (el) => {
-
-    const previousLanguageKey = el.querySelector(`span.${previousLanguage}`);
-    previousLanguageKey.classList.add('hidden');
-    hideAllElements(previousLanguageKey);
-
-    const currentLanguageKey = el.querySelector(`span.${currentLanguage}`);
-    currentLanguageKey.classList.remove('hidden');
-    hideAllElements(currentLanguageKey);
-    showOneElement(currentLanguageKey, `.${keyRegister}`);
-  });
-};
-
-
-// help function to select one active key for render in DOM
-const hideKeys = (keyRegister) => {
-  const keys = document.querySelectorAll(`span.${currentLanguage}`);
-  Array.from(keys, (el) => {
-    hideAllElements(el);
-    showOneElement(el, `.${keyRegister}`);
-  });
-};
-
-const addOneCharacter = (inner) => {
-  const start = textareaDiv.selectionStart;
-  const end = textareaDiv.selectionEnd;
-  textareaDiv.value = textareaDiv.value.substring(0, start) + inner + textareaDiv.value.substring(end);
-
-  textareaDiv.selectionStart = end + 1;
-  textareaDiv.selectionEnd = end + 1;
-};
