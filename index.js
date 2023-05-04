@@ -164,16 +164,6 @@ const creatRegisterKeyVariants = (wrapper, contentObj) => {
 
     wrapper.append(variant);
   });
-
-  // for (const item of registerVariants) {
-  //   const variant = document.createElement('span');
-  //   variant.classList.add(item.className);
-  //   variant.innerText = contentObj[item.value];
-  //
-  //   if (item.className !== CAPS_UP) variant.classList.add('hidden');
-  //
-  //   wrapper.append(variant);
-  // }
 };
 
 const createLanguageKeyVariants = (wrapper, contentObj) => {
@@ -187,14 +177,6 @@ const createLanguageKeyVariants = (wrapper, contentObj) => {
 
     if (lang !== currentLanguage) languageKey.classList.add('hidden');
   });
-  // for (const lang of languagesArr) {
-  //   const languageKey = document.createElement('span');
-  //   languageKey.classList.add(lang);
-  //   wrapper.append(languageKey);
-  //   creatRegisterKeyVariants(languageKey, contentObj[lang]);
-  //
-  //   if (lang !== currentLanguage) languageKey.classList.add('hidden');
-  // }
 };
 
 const createKeyboard = () => {
@@ -227,8 +209,7 @@ const createKeyboard = () => {
 
         if (item === SHIFT_LEFT || item === SHIFT_RIGHT) shiftLeftDownHandle();
 
-        // eslint-disable-next-line no-prototype-builtins
-        if (!configObj.hasOwnProperty(item)) {
+        if (!Object.prototype.hasOwnProperty.call(configObj, item)) {
           addOneCharacter(key.innerText);
         }
 
@@ -281,80 +262,6 @@ const createKeyboard = () => {
         activeMouseKey = item;
       });
     });
-    // for (const item of lineArrowItem) {
-    //   const currentItem = linesArrow[i][item];
-    //   const key = document.createElement('div');
-    //   key.classList.add('key', item);
-    //   keyBoardLine.append(key);
-    //
-    //   createLanguageKeyVariants(key, currentItem);
-    //
-    //   // mouse down handle
-    //   key.addEventListener('mousedown', () => {
-    //     textareaDiv.focus();
-    //
-    //     if (item === CAPSLOCK) {
-    //       capslockHandle(key);
-    //     } else {
-    //       key.classList.add('active');
-    //     }
-    //
-    //     if (item === SHIFT_LEFT || item === SHIFT_RIGHT) shiftLeftDownHandle();
-    //
-    //     // eslint-disable-next-line no-prototype-builtins
-    //     if (!configObj.hasOwnProperty(item)) {
-    //       addOneCharacter(key.innerText);
-    //     }
-    //
-    //     if (item === BACKSPACE) {
-    //       let deletedLeftCharacters = 1;
-    //
-    //       const start = textareaDiv.selectionStart;
-    //       const end = textareaDiv.selectionEnd;
-    //       const sel = textareaDiv.value.substring(start, end);
-    //
-    //       if (sel) deletedLeftCharacters = 0;
-    //
-    //       textareaDiv.value = textareaDiv.value.substring(0, start - deletedLeftCharacters)
-    //         + textareaDiv.value.substring(end);
-    //
-    //       setTimeout(() => {
-    //         textareaDiv.focus();
-    //         textareaDiv.selectionStart = start - deletedLeftCharacters;
-    //         textareaDiv.selectionEnd = start - deletedLeftCharacters;
-    //       }, 0);
-    //     }
-    //
-    //     if (item === DELETE) {
-    //       let deletedLeftCharacters = 1;
-    //
-    //       const start = textareaDiv.selectionStart;
-    //       const end = textareaDiv.selectionEnd;
-    //       const sel = textareaDiv.value.substring(start, end);
-    //
-    //       if (sel) deletedLeftCharacters = 0;
-    //
-    //       textareaDiv.value = textareaDiv.value.substring(0, start)
-    //         + textareaDiv.value.substring(end + deletedLeftCharacters);
-    //
-    //       setTimeout(() => {
-    //         textareaDiv.focus();
-    //         textareaDiv.selectionStart = end;
-    //         textareaDiv.selectionEnd = end;
-    //       }, 0);
-    //     }
-    //
-    //     if (item === TAB) {
-    //       addOneCharacter('\t');
-    //     }
-    //
-    //     if (item === ENTER) {
-    //       addOneCharacter('\n');
-    //     }
-    //
-    //     activeMouseKey = item;
-    //   });
-    // }
 
     keyboardDiv.append(keyBoardLine);
   }
